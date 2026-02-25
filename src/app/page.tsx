@@ -132,12 +132,11 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-<<<<<<< HEAD
         </div>
       </section>
 
       {/* How It Works - Vertical Timeline */}
-      <section className="py-24 bg-white">
+      < section className="py-24 bg-white" >
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center space-y-4 mb-20 hidden">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900">
@@ -216,68 +215,11 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
-=======
-        </div>
-      </section>
 
-      {/* How It Works */}
-      {/* How It Works */}
-      <section className="py-24 bg-slate-50">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto space-y-4 mb-20">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900">
-              Storage Simplified
-            </h2>
-            <p className="text-lg text-slate-600">
-              Three simple steps to reclaim your space.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12 relative">
-            {/* Connecting Line (Desktop) */}
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-blue-100 -z-10"></div>
-
-            {/* Step 1 */}
-            <div className="relative flex flex-col items-center text-center space-y-6">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center border-4 border-blue-50 shadow-lg z-10">
-                <span className="text-3xl font-bold text-blue-600">1</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900">We Pick Up</h3>
-              <p className="text-slate-600 leading-relaxed max-w-sm">
-                Schedule a pickup time that works for you. We bring durable storage bins and handle all the heavy lifting.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative flex flex-col items-center text-center space-y-6">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center border-4 border-blue-50 shadow-lg z-10">
-                <span className="text-3xl font-bold text-blue-600">2</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900">We Store</h3>
-              <p className="text-slate-600 leading-relaxed max-w-sm">
-                Your items are stored in our secure, climate-controlled facility. We create a photo catalog so you always know what's there.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative flex flex-col items-center text-center space-y-6">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center border-4 border-blue-50 shadow-lg z-10">
-                <span className="text-3xl font-bold text-blue-600">3</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900">We Deliver</h3>
-              <p className="text-slate-600 leading-relaxed max-w-sm">
-                Need something back? Tap the item in your app, and we'll rush it to your door in as little as 10 minutes.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
->>>>>>> 1f31c6df368b19d317a74fc4a5ccab7c067da6c6
       {/* Use Cases Grid */}
-      <section className="py-24 bg-[#FDFAF5]">
+      < section className="py-24 bg-[#FDFAF5]" >
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-16 px-4">
             Perfect For Urban Indian Living
@@ -317,7 +259,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Insurance & Trust */}
       {/* Insurance & Trust */}
