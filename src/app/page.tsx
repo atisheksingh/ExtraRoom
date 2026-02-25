@@ -132,7 +132,6 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-<<<<<<< HEAD
         </div>
       </section>
 
@@ -217,8 +216,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-=======
         </div>
       </section>
 
