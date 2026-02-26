@@ -215,8 +215,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section >
-
+      </section>
 
       {/* Use Cases Grid */}
       < section className="py-24 bg-[#FDFAF5]" >
