@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type StorageTier = 'starter' | 'hobbyist' | 'lifestyle';
+export type StorageTier = 'small' | 'medium' | 'large' | 'xl';
 export type ItemStatus = 'in-vault' | 'out-for-delivery' | 'with-user';
 export type HubType = 'micro' | 'mega';
 
@@ -61,7 +61,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
             dateAdded: new Date().toISOString(),
         },
     ]);
-    const [currentTier, setTier] = useState<StorageTier>('starter');
+    const [currentTier, setTier] = useState<StorageTier>('small');
 
     const addItem = (newItem: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => {
         // Determine Hub Type based on Category (Simple logic for demo)
