@@ -1,6 +1,18 @@
-'use client';
+"use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { db } from '@/lib/firebase';
+import {
+    collection,
+    addDoc,
+    query,
+    where,
+    getDocs,
+    doc,
+    updateDoc,
+    serverTimestamp,
+} from 'firebase/firestore';
 
 export type StorageTier = 'small' | 'medium' | 'large' | 'xl';
 export type ItemStatus = 'in-vault' | 'out-for-delivery' | 'with-user';
@@ -19,9 +31,9 @@ export interface StorageItem {
 
 interface StorageContextType {
     items: StorageItem[];
-    addItem: (item: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => void;
-    requestRetrieval: (id: string) => void;
-    requestStorage: (id: string) => void;
+    addItem: (item: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => Promise<void>;
+    requestRetrieval: (id: string) => Promise<void>;
+    requestStorage: (id: string) => Promise<void>;
     currentTier: StorageTier;
     setTier: (tier: StorageTier) => void;
 }
@@ -29,69 +41,92 @@ interface StorageContextType {
 const StorageContext = createContext<StorageContextType | undefined>(undefined);
 
 export function StorageProvider({ children }: { children: React.ReactNode }) {
-    const [items, setItems] = useState<StorageItem[]>([
-        {
-            id: '1',
-            name: 'Winter Jackets',
-            category: 'Clothing',
-            value: 15000,
-            imageUrl: '/images/winter-jackets.png',
-            status: 'in-vault',
-            hubType: 'micro',
-            dateAdded: new Date().toISOString(),
-        },
-        {
-            id: '2',
-            name: 'Ping Pong Table',
-            category: 'Sports',
-            value: 25000,
-            imageUrl: '/images/table-tennis-table.png',
-            status: 'in-vault',
-            hubType: 'mega',
-            dateAdded: new Date().toISOString(),
-        },
-        {
-            id: '3',
-            name: 'Moving Boxes',
-            category: 'Misc',
-            value: 2000,
-            imageUrl: '/images/cardboard-boxes.png',
-            status: 'out-for-delivery',
-            hubType: 'mega',
-            dateAdded: new Date().toISOString(),
-        },
-    ]);
+    const [items, setItems] = useState<StorageItem[]>([]);
     const [currentTier, setTier] = useState<StorageTier>('small');
+    const { user } = useAuth();
 
-    const addItem = (newItem: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => {
+    // Load items for authenticated user from Firestore
+    useEffect(() => {
+        if (!user) {
+            // fallback demo items when not signed in
+            setItems([
+                {
+                    id: '1',
+                    name: 'Winter Jackets',
+                    category: 'Clothing',
+                    value: 15000,
+                    imageUrl: '/images/winter-jackets.png',
+                    status: 'in-vault',
+                    hubType: 'micro',
+                    dateAdded: new Date().toISOString(),
+                },
+            ]);
+            return;
+        }
+
+        const load = async () => {
+            try {
+                const q = query(collection(db, 'items'), where('ownerId', '==', user.uid));
+                const snap = await getDocs(q);
+                const docs: StorageItem[] = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+                setItems(docs);
+            } catch (err) {
+                console.error('Failed loading items from Firestore:', err);
+                setItems([]);
+            }
+        };
+
+        load();
+    }, [user]);
+
+    const addItem = async (newItem: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => {
         // Determine Hub Type based on Category (Simple logic for demo)
         const isBulky = ['Furniture', 'Sports', 'Appliances'].includes(newItem.category);
         const hubType: HubType = isBulky ? 'mega' : 'micro';
 
-        const item: StorageItem = {
+        const payload = {
             ...newItem,
-            id: Math.random().toString(36).substr(2, 9),
-            dateAdded: new Date().toISOString(),
-            status: 'in-vault',
+            status: 'in-vault' as ItemStatus,
             hubType,
-        };
-        setItems((prev) => [item, ...prev]);
+            ownerId: user?.uid ?? null,
+            dateAdded: new Date().toISOString(),
+            createdAt: serverTimestamp(),
+        } as any;
+
+        if (user) {
+            const ref = await addDoc(collection(db, 'items'), payload);
+            setItems((prev) => [{ id: ref.id, ...(payload as any) }, ...prev]);
+        } else {
+            // local fallback
+            const item: StorageItem = {
+                ...newItem,
+                id: Math.random().toString(36).substr(2, 9),
+                dateAdded: new Date().toISOString(),
+                status: 'in-vault',
+                hubType,
+            };
+            setItems((prev) => [item, ...prev]);
+        }
     };
 
-    const requestRetrieval = (id: string) => {
-        setItems((prev) =>
-            prev.map((item) =>
-                item.id === id ? { ...item, status: 'out-for-delivery' } : item
-            )
-        );
+    const requestRetrieval = async (id: string) => {
+        setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'out-for-delivery' } : item)));
+        try {
+            const ref = doc(db, 'items', id);
+            await updateDoc(ref, { status: 'out-for-delivery', updatedAt: serverTimestamp() });
+        } catch (e) {
+            // ignore
+        }
     };
 
-    const requestStorage = (id: string) => {
-        setItems((prev) =>
-            prev.map((item) =>
-                item.id === id ? { ...item, status: 'in-vault' } : item
-            )
-        );
+    const requestStorage = async (id: string) => {
+        setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'in-vault' } : item)));
+        try {
+            const ref = doc(db, 'items', id);
+            await updateDoc(ref, { status: 'in-vault', updatedAt: serverTimestamp() });
+        } catch (e) {
+            // ignore
+        }
     };
 
     return (

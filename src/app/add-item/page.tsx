@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStorage } from '@/context/StorageContext';
+import { useAuth } from '@/context/AuthContext';
+import { storage } from '@/lib/firebase';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useDelivery } from '@/hooks/useDelivery';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,30 +27,53 @@ export default function AddItemPage() {
         category: '',
         value: 2000,
     });
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const { user } = useAuth();
 
     const handleNext = () => {
         if (step < 3) setStep(step + 1);
     };
 
     const handleSubmit = async () => {
-        // Simulate pickup scheduling
-        await schedulePickup(new Date());
+        setUploading(true);
+        try {
+            // Upload image if provided
+            let imageUrl = '/images/cardboard-boxes.png';
+            if (file && user) {
+                const path = `items/${user.uid}/${Date.now()}_${file.name}`;
+                const sRef = storageRef(storage, path);
+                const snap = await uploadBytes(sRef, file);
+                imageUrl = await getDownloadURL(snap.ref);
+            }
 
-        // Add item to context
-        addItem({
-            name: formData.name,
-            category: formData.category,
-            value: formData.value,
-            imageUrl: '/images/cardboard-boxes.png', // Default image for new items
-        });
+            // Simulate pickup scheduling
+            await schedulePickup(new Date());
 
-        // Redirect to dashboard
-        router.push('/dashboard');
+            // Add item to context (will persist to Firestore if signed in)
+            await addItem({
+                name: formData.name,
+                category: formData.category,
+                value: formData.value,
+                imageUrl,
+            });
+
+            // Redirect to dashboard
+            router.push('/dashboard');
+        } catch (err) {
+            console.error('Failed to add item:', err);
+            // TODO: show user-facing error
+        } finally {
+            setUploading(false);
+        }
     };
 
     return (
-        <div className="max-w-md mx-auto py-12">
-            <Card>
+        <>
+            <ProtectedRoute>
+                <div className="max-w-md mx-auto py-12">
+                    <Card>
                 <CardHeader>
                     <CardTitle>Catalog New Item (Step {step}/3)</CardTitle>
                 </CardHeader>
@@ -76,6 +103,22 @@ export default function AddItemPage() {
                                         <SelectItem value="Misc">Miscellaneous</SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="image">Photo (optional)</Label>
+                                <input
+                                    id="image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const f = e.target.files?.[0] ?? null;
+                                        setFile(f);
+                                        setPreview(f ? URL.createObjectURL(f) : null);
+                                    }}
+                                />
+                                {preview && (
+                                    <img src={preview} className="mt-2 h-28 w-28 object-cover rounded" />
+                                )}
                             </div>
                         </div>
                     )}
@@ -121,14 +164,16 @@ export default function AddItemPage() {
                         {step < 3 ? (
                             <Button onClick={handleNext} disabled={!formData.name || !formData.category}>Next</Button>
                         ) : (
-                            <Button onClick={handleSubmit} disabled={isScheduling}>
-                                {isScheduling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            <Button onClick={handleSubmit} disabled={isScheduling || uploading}>
+                                {(isScheduling || uploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Confirm Pickup
                             </Button>
                         )}
                     </div>
                 </CardFooter>
-            </Card>
-        </div>
+                    </Card>
+                </div>
+            </ProtectedRoute>
+        </>
     );
 }

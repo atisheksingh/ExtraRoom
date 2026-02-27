@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PricingCalculator } from '@/components/features/PricingCalculator';
+import FlashStoreHubSection from '@/components/FlashStoreHubSection';
 import { ArrowRight, Zap, Box, ShieldCheck, CalendarCheck, PackageSearch, Truck } from 'lucide-react';
 
 export default function LandingPage() {
@@ -39,14 +40,13 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Column: Image */}
+            {/* Right Column: Network Diagram */}
             <div className="hidden lg:block relative">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                <img
-                  src="/hero_reference.png"
-                  alt="Organized Living"
-                  className="w-full h-auto object-cover"
-                />
+                {/* Use the interactive hub diagram component */}
+                <div className="w-[520px] p-6">
+                  <FlashStoreHubSection />
+                </div>
               </div>
             </div>
           </div>
@@ -130,6 +130,38 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mega-Hubs & Micro-Hubs Explanation */}
+      <section className="py-20 bg-slate-50">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-slate-900">Mega-Hubs & Micro-Hubs</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">We operate a two-tiered network: central Mega-Hubs handle bulk, climate-controlled storage and scheduled deliveries, while Micro-Hubs act as local caches for your most-requested items so they arrive in minutes.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+              <div className="mb-4 text-xl font-semibold">Mega-Hub</div>
+              <p className="text-slate-600">Main warehouse — climate controlled, insured, holds everything long-term. Bulky items and scheduled deliveries are dispatched from Mega-Hubs (typical delivery window: 2–4 hours).</p>
+              <div className="mt-4 flex gap-2 flex-wrap">
+                <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Cold Storage</span>
+                <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Insured</span>
+                <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Long-term</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+              <div className="mb-4 text-xl font-semibold">Micro-Hubs</div>
+              <p className="text-slate-600">Local cache points scattered across the city that hold your frequently-requested items for instant dispatch. Flash deliveries from Micro-Hubs typically arrive within 10–60 minutes.</p>
+              <div className="mt-4 flex gap-2 flex-wrap">
+                <span className="text-sm font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">Cache</span>
+                <span className="text-sm font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">Flash Items</span>
+                <span className="text-sm font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">10–60 min</span>
+              </div>
             </div>
           </div>
         </div>
