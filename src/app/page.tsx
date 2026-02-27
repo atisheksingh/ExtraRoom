@@ -218,7 +218,7 @@ export default function LandingPage() {
       </section>
 
       {/* Use Cases Grid */}
-      < section className="py-24 bg-[#FDFAF5]" >
+      < section className="py-24 bg-blue-50/50" >
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-16 px-4">
             Perfect For Urban Indian Living

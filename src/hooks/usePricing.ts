@@ -1,31 +1,50 @@
 import { StorageTier } from "@/context/StorageContext";
 
 export const PRICING_TIERS = {
-    starter: {
-        name: 'Starter',
+    small: {
+        name: 'Small',
+        price: 199,
+        description: 'Small — per box plan',
+        delivery: 'Free',
+        prime: '30 min',
+        split: '—',
+        features: ['Free delivery', 'Prime: 30 min'],
+    },
+    medium: {
+        name: 'Medium',
         price: 499,
-        description: 'Perfect for decluttering a closet.',
-        features: ['5 Items', 'Standard Delivery', 'Micro-hub Access'],
+        description: 'Medium — per box plan',
+        delivery: '30/70 ; user/client',
+        prime: '2 hour notice',
+        split: '30/70 ; user/client',
+        features: ['Delivery split 30/70 (user/client)', '2 hour notice'],
     },
-    hobbyist: {
-        name: 'Hobbyist',
-        price: 1499,
-        description: 'Great for gear and seasonal items.',
-        features: ['20 Items', 'Priority Delivery', 'Mega-hub Access'],
+    large: {
+        name: 'Large',
+        price: 999,
+        description: 'Large — per box plan',
+        delivery: '60/40 : user/client',
+        prime: '2 hour notice',
+        split: '60/40 : user/client',
+        features: ['Delivery split 60/40 (user/client)', '2 hour notice'],
     },
-    lifestyle: {
-        name: 'Lifestyle',
-        price: 4999,
-        description: 'Your entire extra room, on demand.',
-        features: ['Unlimited Items', '10-min Flash Retrieval', 'Concierge Service'],
+    xl: {
+        name: 'XL/Custom',
+        price: 'Custom',
+        description: 'XL / Custom sizing and pricing',
+        delivery: 'Custom costing',
+        prime: 'Custom notice',
+        split: 'Custom',
+        features: ['Custom costing', 'Custom notice'],
     },
 };
 
 export function usePricing() {
     const calculateTotal = (tier: StorageTier, extraItems: number = 0) => {
-        const basePrice = PRICING_TIERS[tier].price;
+        const basePrice = PRICING_TIERS[tier]?.price;
         // Simple logic: ₹100 per extra item
         const extraCost = extraItems * 100;
+        if (typeof basePrice !== 'number') return null;
         return basePrice + extraCost;
     };
 
