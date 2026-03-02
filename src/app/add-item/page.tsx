@@ -41,11 +41,16 @@ export default function AddItemPage() {
         try {
             // Upload image if provided
             let imageUrl = '/images/cardboard-boxes.png';
-            if (file && user) {
+            if (file && user && storage) {
                 const path = `items/${user.uid}/${Date.now()}_${file.name}`;
                 const sRef = storageRef(storage, path);
                 const snap = await uploadBytes(sRef, file);
                 imageUrl = await getDownloadURL(snap.ref);
+            } else if (file && user && !storage) {
+                // Storage not initialized (likely server/SSR or config issue) — skip upload
+                // Log to help diagnose in deployment logs
+                // eslint-disable-next-line no-console
+                console.warn('Firebase Storage not available; skipping image upload.');
             }
 
             // Simulate pickup scheduling

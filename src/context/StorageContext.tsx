@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { db } from '@/lib/firebase';
+import type { Firestore } from 'firebase/firestore';
 import {
     collection,
     addDoc,
@@ -45,6 +46,11 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
     const [currentTier, setTier] = useState<StorageTier>('small');
     const { user } = useAuth();
 
+    const dbOrThrow = (): Firestore => {
+        if (!db) throw new Error('Firebase Firestore not initialized');
+        return db as Firestore;
+    };
+
     // Load items for authenticated user from Firestore
     useEffect(() => {
         if (!user) {
@@ -66,7 +72,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
 
         const load = async () => {
             try {
-                const q = query(collection(db, 'items'), where('ownerId', '==', user.uid));
+                const q = query(collection(dbOrThrow(), 'items'), where('ownerId', '==', user.uid));
                 const snap = await getDocs(q);
                 const docs: StorageItem[] = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
                 setItems(docs);
@@ -94,7 +100,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
         } as any;
 
         if (user) {
-            const ref = await addDoc(collection(db, 'items'), payload);
+            const ref = await addDoc(collection(dbOrThrow(), 'items'), payload);
             setItems((prev) => [{ id: ref.id, ...(payload as any) }, ...prev]);
         } else {
             // local fallback
@@ -112,7 +118,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
     const requestRetrieval = async (id: string) => {
         setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'out-for-delivery' } : item)));
         try {
-            const ref = doc(db, 'items', id);
+            const ref = doc(dbOrThrow(), 'items', id);
             await updateDoc(ref, { status: 'out-for-delivery', updatedAt: serverTimestamp() });
         } catch (e) {
             // ignore
@@ -122,7 +128,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
     const requestStorage = async (id: string) => {
         setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'in-vault' } : item)));
         try {
-            const ref = doc(db, 'items', id);
+            const ref = doc(dbOrThrow(), 'items', id);
             await updateDoc(ref, { status: 'in-vault', updatedAt: serverTimestamp() });
         } catch (e) {
             // ignore
