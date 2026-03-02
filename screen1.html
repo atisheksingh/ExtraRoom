@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FlashStore User Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff6933',
+                        'primary-light': '#ff8a5e',
+                        'primary-dark': '#e65120',
+                        'background-light': '#f8f6f5',
+                        'background-dark': '#23140f',
+                        'surface-light': '#ffffff',
+                        'surface-dark': '#2c1a15',
+                        'text-primary-light': '#181210',
+                        'text-secondary-light': '#8d6a5e',
+                        'text-primary-dark': '#f8f6f5',
+                        'text-secondary-dark': '#d4bbae',
+                        'border-light': '#e7deda',
+                        'border-dark': '#4a352f',
+                    },
+                    fontFamily: {
+                        display: ['Manrope', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        DEFAULT: '0.25rem',
+                        lg: '0.5rem',
+                        xl: '0.75rem',
+                        full: '9999px',
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        /* Custom scrollbar for better aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #e7deda;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark transition-colors duration-200">
+<div class="flex min-h-screen w-full overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="hidden lg:flex flex-col w-72 h-screen fixed inset-y-0 left-0 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark z-20 transition-colors duration-200">
+<div class="flex flex-col h-full justify-between p-6">
+<div class="flex flex-col gap-8">
+<!-- User Profile / Brand Header -->
+<div class="flex items-center gap-4 px-2">
+<div class="relative h-12 w-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 ring-2 ring-primary/20">
+<img alt="User Avatar" class="h-full w-full object-cover" data-alt="Portrait of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfdWglbTRumkRZyu5bKgozvpwBC0L9Pi7sqS3U8YzRtm-etQ1fH8dIFA5GajYNY8W1U1pzHvNX7QKFL__-RqV5oMMJ3aZDKGXjDm2HrI3PW8VwLEAdvLB22kw2rSnMJjZkm-cnYyGb8Yl-ibaUVDkE20k0_FsYKXqA-8K00NAuWebTP7Q6oTY-r8C98o2Pxp283r3N0BBum6nSrcxFXvjwhwtRy2Tn8mY67TV1nzzK0YyoFYPAlNWjpc57GCaS8j6A6kYNGYPlfTWi"/>
+</div>
+<div class="flex flex-col">
+<h1 class="text-text-primary-light dark:text-text-primary-dark text-lg font-bold leading-tight">FlashStore</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs font-medium uppercase tracking-wider">Your Space</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl bg-primary/10 text-primary dark:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-bold text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-background-light dark:hover:bg-background-dark/50 text-text-secondary-light dark:text-text-secondary-dark hover:text-text-primary-light dark:hover:text-text-primary-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">inventory_2</span>
+<span class="font-medium text-sm">My Items</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-background-light dark:hover:bg-background-dark/50 text-text-secondary-light dark:text-text-secondary-dark hover:text-text-primary-light dark:hover:text-text-primary-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">local_shipping</span>
+<span class="font-medium text-sm">Schedule Pickup</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-background-light dark:hover:bg-background-dark/50 text-text-secondary-light dark:text-text-secondary-dark hover:text-text-primary-light dark:hover:text-text-primary-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">credit_card</span>
+<span class="font-medium text-sm">Billing</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-background-light dark:hover:bg-background-dark/50 text-text-secondary-light dark:text-text-secondary-dark hover:text-text-primary-light dark:hover:text-text-primary-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Action -->
+<button class="flex w-full items-center justify-center gap-2 rounded-xl h-12 px-4 bg-background-light dark:bg-background-dark hover:bg-red-50 dark:hover:bg-red-900/10 text-text-secondary-light dark:text-text-secondary-dark hover:text-red-600 dark:hover:text-red-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="text-sm font-bold">Log Out</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-72 min-h-screen bg-background-light dark:bg-background-dark p-4 md:p-8 lg:p-12 transition-colors duration-200">
+<div class="max-w-7xl mx-auto flex flex-col gap-8">
+<!-- Header Mobile -->
+<div class="lg:hidden flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<div class="text-primary">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+<span class="font-bold text-xl text-text-primary-light dark:text-text-primary-dark">FlashStore</span>
+</div>
+<button class="p-2 text-text-primary-light dark:text-text-primary-dark">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<!-- Welcome Section -->
+<div>
+<h2 class="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark tracking-tight">Dashboard</h2>
+<p class="text-text-secondary-light dark:text-text-secondary-dark mt-1">Welcome back! Here's what's happening with your storage.</p>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Total Items Card -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-light dark:border-border-dark flex flex-col justify-between h-40 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">inventory_2</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<h3 class="font-medium text-text-secondary-light dark:text-text-secondary-dark">Total Items</h3>
+</div>
+<div>
+<p class="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark">0</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Items currently stored</p>
+</div>
+</div>
+<!-- Active Retrievals Card -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-light dark:border-border-dark flex flex-col justify-between h-40 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">local_shipping</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined">call_received</span>
+</div>
+<h3 class="font-medium text-text-secondary-light dark:text-text-secondary-dark">Active Retrievals</h3>
+</div>
+<div>
+<p class="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark">0</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">In transit to you</p>
+</div>
+</div>
+<!-- Next Delivery Card -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-light dark:border-border-dark flex flex-col justify-between h-40 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">calendar_month</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<h3 class="font-medium text-text-secondary-light dark:text-text-secondary-dark">Next Delivery</h3>
+</div>
+<div>
+<p class="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">None</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Scheduled pickup</p>
+</div>
+</div>
+</div>
+<!-- Main Section Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+<!-- Empty State / Action Area -->
+<div class="xl:col-span-2 bg-surface-light dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-8 flex flex-col items-center justify-center text-center gap-6 min-h-[400px]">
+<div class="w-full max-w-sm aspect-video bg-background-light dark:bg-background-dark/50 rounded-xl overflow-hidden relative group">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-9xl text-border-light dark:text-border-dark group-hover:scale-110 transition-transform duration-300">inventory_2</span>
+</div>
+<img alt="Empty cardboard box illustration" class="w-full h-full object-cover opacity-50 mix-blend-overlay" data-alt="Illustration of empty storage box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcTtEC3CLHDzVoHz_Xu3TUBucaZiAsTzh7AT83VsG7AZuJ3hf5ThLRLPo_5Hni4VP24_v9EHmxfMKSt9SaY8WZ2jR0EyCPeMyIxEHLqumoGx0LlxdW1oBGi6xp3spHor6CYuPdMiNlnmn8mJxCYrjn0nJFxzw44uKfvweUz5x410P2zrOmb4U7IfK-COJexzLOfHGT56hdNtsUrvmmHADSs43aZS7Nw0gooXAtkcvd0wcMbvqHbEK0wD6iEN6nILbswvC5sg9dSYFd"/>
+</div>
+<div class="max-w-md">
+<h3 class="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mb-2">Your storage is empty</h3>
+<p class="text-text-secondary-light dark:text-text-secondary-dark mb-6">
+                                Start decluttering your life with FlashStore. It's safe, secure, and we do the heavy lifting for you.
+                            </p>
+<button class="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 flex items-center gap-2 mx-auto">
+<span class="material-symbols-outlined">add</span>
+                                Add First Item
+                            </button>
+</div>
+</div>
+<!-- Storage Capacity Widget -->
+<div class="xl:col-span-1 bg-surface-light dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-8 flex flex-col">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">Storage Capacity</h3>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Real-time usage</p>
+</div>
+<div class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-md">
+                                Healthy
+                            </div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center relative py-8">
+<!-- Circular Progress Simulation -->
+<div class="relative w-48 h-48">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-background-light dark:text-background-dark/50" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary transition-all duration-1000 ease-out" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-dasharray="552" stroke-dashoffset="552" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark">0%</span>
+<span class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wide">Used</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-6">
+<div class="bg-background-light dark:bg-background-dark/50 p-4 rounded-xl">
+<div class="flex items-center gap-2 mb-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-xs font-bold text-text-secondary-light dark:text-text-secondary-dark">Used</span>
+</div>
+<span class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">0 GB</span>
+</div>
+<div class="bg-background-light dark:bg-background-dark/50 p-4 rounded-xl">
+<div class="flex items-center gap-2 mb-1">
+<div class="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+<span class="text-xs font-bold text-text-secondary-light dark:text-text-secondary-dark">Available</span>
+</div>
+<span class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">∞</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity (Optional / Extra) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark overflow-hidden">
+<div class="p-6 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+<h3 class="font-bold text-lg text-text-primary-light dark:text-text-primary-dark">Recent Activity</h3>
+<button class="text-primary hover:text-primary-dark text-sm font-medium">View All</button>
+</div>
+<div class="p-6">
+<div class="flex flex-col gap-4 text-center py-8">
+<div class="mx-auto bg-background-light dark:bg-background-dark h-12 w-12 rounded-full flex items-center justify-center text-text-secondary-light dark:text-text-secondary-dark mb-2">
+<span class="material-symbols-outlined">history</span>
+</div>
+<p class="text-text-secondary-light dark:text-text-secondary-dark">No recent activity found on your account.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -28,6 +28,8 @@ export interface StorageItem {
     status: ItemStatus;
     hubType: HubType;
     dateAdded: string;
+    scheduledPickupDate?: string; // ISO date string
+    scheduledPickupTime?: string; // e.g., "09:00 AM"
 }
 
 interface StorageContextType {

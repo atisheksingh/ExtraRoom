@@ -27,8 +27,14 @@ export function Navbar() {
                             <Link href="/dashboard" className="text-sm font-medium transition-colors hover:text-primary">
                                 Dashboard
                             </Link>
+                            <Link href="/items" className="text-sm font-medium transition-colors hover:text-primary">
+                                Items
+                            </Link>
                             <Link href="/add-item" className="text-sm font-medium transition-colors hover:text-primary">
                                 Add Item
+                            </Link>
+                            <Link href="/pricing" className="text-sm font-medium transition-colors hover:text-primary">
+                                Pricing
                             </Link>
                         </>
                     )}

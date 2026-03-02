@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Package, Truck, Clock } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface ItemCardProps {
     item: StorageItem;
@@ -36,32 +37,34 @@ export function ItemCard({ item }: ItemCardProps) {
 
     return (
         <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <div className="relative h-48 w-full bg-gray-100">
-                <Image
-                    src={item.imageUrl}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                />
-                <div className="absolute top-2 right-2">
-                    <Badge variant={statusColor[item.status]}>
-                        {statusIcon[item.status]}
-                        {item.status.replace(/-/g, ' ')}
-                    </Badge>
+            <Link href={`/items/${item.id}`} className="block">
+                <div className="relative h-48 w-full bg-gray-100">
+                    <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                    />
+                    <div className="absolute top-2 right-2">
+                        <Badge variant={statusColor[item.status]}>
+                            {statusIcon[item.status]}
+                            {item.status.replace(/-/g, ' ')}
+                        </Badge>
+                    </div>
                 </div>
-            </div>
-            <CardHeader>
-                <CardTitle className="text-lg">{item.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">{item.category}</p>
-            </CardHeader>
-            <CardContent>
-                <div className="flex justify-between text-sm">
-                    <span>Value: ₹{item.value}</span>
-                    <span className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full uppercase font-bold tracking-wider">
-                        {item.hubType} HUB
-                    </span>
-                </div>
-            </CardContent>
+                <CardHeader>
+                    <CardTitle className="text-lg hover:text-primary transition-colors">{item.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{item.category}</p>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex justify-between text-sm">
+                        <span>Value: ₹{item.value}</span>
+                        <span className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full uppercase font-bold tracking-wider">
+                            {item.hubType} HUB
+                        </span>
+                    </div>
+                </CardContent>
+            </Link>
             <CardFooter>
                 <Button
                     onClick={handleAction}

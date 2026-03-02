@@ -33,7 +33,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
     const authOrThrow = (): Auth => {
-        if (!auth) throw new Error('Firebase auth not initialized');
+        if (!auth) {
+            const error = 'Firebase auth not initialized. Check your .env file and browser console for details.';
+            // eslint-disable-next-line no-console
+            console.error(error);
+            throw new Error(error);
+        }
         return auth as Auth;
     };
 
@@ -43,34 +48,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     useEffect(() => {
-        try {
-            const a = authOrThrow();
-            const unsubscribe = onAuthStateChanged(a, async (u) => {
-                setUser(u);
-                if (u) {
-                    // Ensure user doc exists
-                    const ref = doc(dbOrThrow(), 'users', u.uid);
-                    const snap = await getDoc(ref);
-                    if (!snap.exists()) {
-                        await setDoc(ref, {
-                            uid: u.uid,
-                            email: u.email ?? null,
-                            displayName: u.displayName ?? null,
-                            photoURL: u.photoURL ?? null,
-                            createdAt: serverTimestamp(),
-                        });
+        // Retry logic: wait a bit and check if auth is available
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        const setupAuth = () => {
+            attempts++;
+            
+            try {
+                if (!auth) {
+                    // eslint-disable-next-line no-console
+                    console.warn(`Auth not available yet (attempt ${attempts}/${maxAttempts}). Retrying...`);
+                    
+                    if (attempts < maxAttempts) {
+                        setTimeout(setupAuth, 1000);
                     }
+                    return () => {};
                 }
-            });
 
-            return unsubscribe;
-        } catch (e) {
-            // Auth not initialized yet — this can happen during SSR or early client init.
-            // We'll silently ignore; component will try again on re-render.
-            // eslint-disable-next-line no-console
-            console.warn('Auth not initialized for onAuthStateChanged:', e);
-            return () => {};
-        }
+                // Auth is ready, set up listener
+                const unsubscribe = onAuthStateChanged(auth as Auth, async (u) => {
+                    setUser(u);
+                    if (u) {
+                        try {
+                            // Ensure user doc exists
+                            const ref = doc(dbOrThrow(), 'users', u.uid);
+                            const snap = await getDoc(ref);
+                            if (!snap.exists()) {
+                                await setDoc(ref, {
+                                    uid: u.uid,
+                                    email: u.email ?? null,
+                                    displayName: u.displayName ?? null,
+                                    photoURL: u.photoURL ?? null,
+                                    createdAt: serverTimestamp(),
+                                });
+                            }
+                        } catch (err) {
+                            // eslint-disable-next-line no-console
+                            console.error('Error creating/fetching user doc:', err);
+                        }
+                    }
+                });
+
+                return unsubscribe;
+            } catch (e) {
+                // Auth not initialized yet — this can happen during SSR or early client init.
+                // eslint-disable-next-line no-console
+                console.warn('Error setting up onAuthStateChanged:', e);
+                return () => {};
+            }
+        };
+
+        const unsubscribe = setupAuth();
+        return unsubscribe;
     }, []);
 
     const signInWithGoogle = async () => {
