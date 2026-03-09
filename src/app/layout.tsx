@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ExtraRoom - Physical Cloud Storage',
+  title: 'FlashStore - Physical Cloud Storage',
   description: 'Your closet in the cloud. 10-minute flash retrieval.',
 };
 
