@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
+import { ChevronRight, Package, Palette, BadgeCheck, Truck, ArrowRight, Rocket, Radar, Headset } from 'lucide-react';
 
 export default function ItemDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { items, requestRetrieval, requestStorage } = useStorage();
@@ -28,11 +29,11 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                 {/* Breadcrumbs */}
                 <nav className="flex items-center gap-2 mb-8 text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium">
                     <Link href="/dashboard" className="hover:text-primary-custom transition-colors">Home</Link>
-                    <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                    <ChevronRight className="w-4 h-4" />
                     <span className="hover:text-primary-custom transition-colors cursor-pointer">Orders</span>
-                    <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                    <ChevronRight className="w-4 h-4" />
                     <span className="hover:text-primary-custom transition-colors cursor-pointer">Order #12345</span>
-                    <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                    <ChevronRight className="w-4 h-4" />
                     <span className="text-text-primary-light dark:text-text-primary-dark truncate">{item.name || 'UltraSpeed Wireless Earbuds'}</span>
                 </nav>
 
@@ -51,7 +52,7 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                             <div className="p-6">
                                 <div className="flex justify-between items-start mb-2">
                                     <h1 className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark">{item.name || 'UltraSpeed Wireless Earbuds'}</h1>
-                                    <div className="text-xl font-bold text-primary-custom">{item.value ? `₹${item.value}` : '$129.00'}</div>
+                                    <div className="text-xl font-bold text-primary-custom">{item.value ? `₹${item.value}` : '₹9,999'}</div>
                                 </div>
                                 <p className="text-text-secondary-light dark:text-text-secondary-dark text-base leading-relaxed mb-6">
                                     Experience high-fidelity sound with our latest UltraSpeed Wireless Earbuds. Featuring active noise cancellation, 30-hour battery life, and seamless connectivity.
@@ -59,15 +60,15 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
 
                                 <div className="flex flex-wrap gap-4 text-sm text-text-secondary-light dark:text-text-secondary-dark border-t border-border-light dark:border-border-dark pt-6">
                                     <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary-custom">inventory_2</span>
+                                        <Package className="w-5 h-5 text-primary-custom" />
                                         <span className="capitalize">SKU: FS-9921-X</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary-custom">palette</span>
+                                        <Palette className="w-5 h-5 text-primary-custom" />
                                         <span className="uppercase">Color: Midnight Black</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary-custom">verified</span>
+                                        <BadgeCheck className="w-5 h-5 text-primary-custom" />
                                         <span className="truncate max-w-[150px]">Warranty: 2 Years</span>
                                     </div>
                                 </div>
@@ -86,7 +87,7 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                             <div className="flex flex-col sm:flex-row items-center gap-6 relative z-10">
                                 <div className="flex-1">
                                     <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary-custom">local_shipping</span>
+                                        <Truck className="w-6 h-6 text-primary-custom" />
                                         Express Delivery Available
                                     </h3>
                                     <p className="text-gray-300 text-sm mb-4">
@@ -98,13 +99,13 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                                         className="bg-primary-custom hover:bg-primary-dark disabled:opacity-50 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg hover:shadow-primary-custom/30 flex items-center gap-2 w-full sm:w-auto justify-center"
                                     >
                                         Schedule Delivery
-                                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                        <ArrowRight className="w-5 h-5" />
                                     </button>
                                 </div>
                                 {/* Illustration Placeholder */}
                                 <div className="w-full sm:w-48 h-32 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center p-4 relative">
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-6xl text-primary-custom/80 animate-pulse">rocket_launch</span>
+                                        <Rocket className="w-16 h-16 text-primary-custom/80 animate-pulse" />
                                     </div>
                                     <div className="absolute top-2 right-2 bg-primary-custom text-white text-[10px] font-bold px-2 py-0.5 rounded-full">FAST</div>
                                 </div>
@@ -117,7 +118,7 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                         {/* Tracking Status Card */}
                         <div className="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-border-light dark:border-border-dark">
                             <h3 className="text-lg font-bold text-text-primary-light dark:text-text-primary-dark mb-6 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary-custom">radar</span>
+                                <Radar className="w-6 h-6 text-primary-custom" />
                                 Live Tracking
                             </h3>
 
@@ -161,8 +162,8 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                             {/* Step Tracker */}
                             <div className="relative pl-4 space-y-8 before:absolute before:left-[21px] before:top-2 before:bottom-2 before:w-0.5 before:bg-border-light dark:before:bg-border-dark">
                                 {/* Step 1: In Vault */}
-                                <div className="relative flex items-start gap-4">
-                                    <div className={`absolute left-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'in-vault' ? 'bg-primary-custom border-2 border-primary-custom' : 'bg-primary-custom'}`}></div>
+                                <div className="relative flex items-start gap-6">
+                                    <div className={`relative shrink-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'in-vault' ? 'bg-primary-custom border-2 border-primary-custom' : 'bg-primary-custom'}`}></div>
                                     <div className="flex flex-col">
                                         <span className={`text-sm font-bold ${item.status === 'in-vault' ? 'text-primary-custom' : 'text-text-primary-light dark:text-text-primary-dark'}`}>Order Requested</span>
                                         <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Oct 24, 09:41 AM</span>
@@ -170,8 +171,8 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                                 </div>
 
                                 {/* Step 2: Packed */}
-                                <div className={`relative flex items-start gap-4 ${item.status === 'in-vault' ? 'opacity-50' : ''}`}>
-                                    <div className={`absolute left-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'out-for-delivery' ? 'bg-primary-custom' : (item.status === 'with-user' ? 'bg-primary-custom' : 'bg-primary-custom')}`}></div>
+                                <div className={`relative flex items-start gap-6 ${item.status === 'in-vault' ? 'opacity-50' : ''}`}>
+                                    <div className={`relative shrink-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'out-for-delivery' ? 'bg-primary-custom' : (item.status === 'with-user' ? 'bg-primary-custom' : 'bg-primary-custom')}`}></div>
                                     <div className="flex flex-col">
                                         <span className={`text-sm font-bold ${item.status === 'out-for-delivery' ? 'text-text-primary-light dark:text-text-primary-dark' : 'text-text-primary-light dark:text-text-primary-dark'}`}>Packed & Ready</span>
                                         <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Oct 24, 02:15 PM</span>
@@ -179,8 +180,8 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                                 </div>
 
                                 {/* Step 3: Transit */}
-                                <div className={`relative flex items-start gap-4 ${item.status === 'in-vault' ? 'opacity-50' : ''}`}>
-                                    <div className={`absolute left-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'out-for-delivery' ? 'bg-white dark:bg-surface-dark border-[3px] border-primary-custom shadow-[0_0_10px_#ff6933_inset]' : (item.status === 'with-user' ? 'bg-primary-custom' : 'bg-border-light dark:bg-border-dark')}`}></div>
+                                <div className={`relative flex items-start gap-6 ${item.status === 'in-vault' ? 'opacity-50' : ''}`}>
+                                    <div className={`relative shrink-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'out-for-delivery' ? 'bg-white dark:bg-surface-dark border-[3px] border-primary-custom shadow-[0_0_10px_#ff6933_inset]' : (item.status === 'with-user' ? 'bg-primary-custom' : 'bg-border-light dark:bg-border-dark')}`}></div>
                                     <div className="flex flex-col">
                                         <span className={`text-sm font-bold ${item.status === 'out-for-delivery' ? 'text-primary-custom' : 'text-text-primary-light dark:text-text-primary-dark'}`}>In Transit to Hub</span>
                                         <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Currently at North East Node 4A</span>
@@ -188,8 +189,8 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                                 </div>
 
                                 {/* Step 4: With User */}
-                                <div className={`relative flex items-start gap-4 ${item.status !== 'with-user' ? 'opacity-50' : ''}`}>
-                                    <div className={`absolute left-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'with-user' ? 'bg-primary-custom border-2 border-primary-custom' : 'bg-border-light dark:bg-border-dark'}`}></div>
+                                <div className={`relative flex items-start gap-6 ${item.status !== 'with-user' ? 'opacity-50' : ''}`}>
+                                    <div className={`relative shrink-0 mt-1 size-3 rounded-full ring-4 ring-white dark:ring-surface-dark z-10 ${item.status === 'with-user' ? 'bg-primary-custom border-2 border-primary-custom' : 'bg-border-light dark:bg-border-dark'}`}></div>
                                     <div className="flex flex-col">
                                         <span className={`text-sm font-bold ${item.status === 'with-user' ? 'text-primary-custom' : 'text-text-primary-light dark:text-text-primary-dark'}`}>Delivered</span>
                                         <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Estimated Oct 26</span>
@@ -202,7 +203,7 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                         <div className="bg-background-light dark:bg-background-dark rounded-xl p-5 border border-transparent dark:border-border-dark flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="bg-white dark:bg-surface-dark p-2 rounded-full text-text-secondary-light dark:text-text-secondary-dark shadow-sm">
-                                    <span className="material-symbols-outlined">support_agent</span>
+                                    <Headset className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <div className="text-sm font-bold text-text-primary-light dark:text-text-primary-dark">Need help with this item?</div>

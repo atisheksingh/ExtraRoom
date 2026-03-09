@@ -14,7 +14,7 @@ export function Navbar() {
                 <Link href="/" className="flex items-center space-x-2">
                     <div className="p-0.5 rounded-lg overflow-hidden">
                         <img
-                            src="/logo.png"
+                            src="/logo.svg"
                             alt="Logo"
                             className="h-8 w-8 object-cover rounded-md"
                         />
@@ -22,6 +22,9 @@ export function Navbar() {
                     <span className="text-xl font-bold tracking-tight text-slate-900">FlashStore</span>
                 </Link>
                 <div className="flex items-center space-x-4">
+                    <Link href="/pricing" className="text-sm font-medium transition-colors hover:text-primary">
+                        Pricing
+                    </Link>
                     {user && (
                         <>
                             <Link href="/dashboard" className="text-sm font-medium transition-colors hover:text-primary">
@@ -32,9 +35,6 @@ export function Navbar() {
                             </Link>
                             <Link href="/add-item" className="text-sm font-medium transition-colors hover:text-primary">
                                 Add Item
-                            </Link>
-                            <Link href="/pricing" className="text-sm font-medium transition-colors hover:text-primary">
-                                Pricing
                             </Link>
                         </>
                     )}

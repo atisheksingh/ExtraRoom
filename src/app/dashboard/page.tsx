@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { Archive, Calendar, Clock, Database, History, Inbox, Package, Plus, Truck } from 'lucide-react';
 
 export default function DashboardPage() {
     const { items } = useStorage();
@@ -34,12 +35,12 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Total Items Card */}
                     <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-light dark:border-border-dark flex flex-col justify-between h-40 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span className="material-symbols-outlined text-8xl text-primary-custom">inventory_2</span>
+                        <div className="absolute -right-4 -top-4 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Package className="w-32 h-32 text-primary-custom" strokeWidth={1} />
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>dataset</span>
+                                <Database className="w-5 h-5" />
                             </div>
                             <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">Total Items</h3>
                         </div>
@@ -51,12 +52,12 @@ export default function DashboardPage() {
 
                     {/* Active Retrievals Card */}
                     <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-light dark:border-border-dark flex flex-col justify-between h-40 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span className="material-symbols-outlined text-8xl text-primary-custom">local_shipping</span>
+                        <div className="absolute -right-4 -top-4 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Truck className="w-32 h-32 text-primary-custom" strokeWidth={1} />
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>call_received</span>
+                                <Inbox className="w-5 h-5" />
                             </div>
                             <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">Active Retrievals</h3>
                         </div>
@@ -68,12 +69,12 @@ export default function DashboardPage() {
 
                     {/* Next Delivery Card */}
                     <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-border-light dark:border-border-dark flex flex-col justify-between h-40 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span className="material-symbols-outlined text-8xl text-primary-custom">calendar_month</span>
+                        <div className="absolute -right-4 -top-4 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Calendar className="w-32 h-32 text-primary-custom" strokeWidth={1} />
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg text-green-600 dark:text-green-400">
-                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>schedule</span>
+                                <Clock className="w-5 h-5" />
                             </div>
                             <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">Next Delivery</h3>
                         </div>
@@ -92,7 +93,7 @@ export default function DashboardPage() {
                             <>
                                 <div className="w-full max-w-sm aspect-video bg-background-light dark:bg-background-dark/50 rounded-xl overflow-hidden relative group">
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-9xl text-border-light dark:text-border-dark group-hover:scale-110 transition-transform duration-300">inventory_2</span>
+                                        <Archive className="w-24 h-24 text-border-light dark:text-border-dark group-hover:scale-110 transition-transform duration-300" strokeWidth={1} />
                                     </div>
                                     <img
                                         alt="Empty cardboard box illustration"
@@ -106,7 +107,7 @@ export default function DashboardPage() {
                                         Start decluttering your life with FlashStore. It's safe, secure, and we do the heavy lifting for you.
                                     </p>
                                     <Link href="/add-item" className="bg-primary-custom hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-primary-custom/20 hover:shadow-primary-custom/40 flex items-center justify-center gap-2 mx-auto w-fit">
-                                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>add</span>
+                                        <Plus className="w-5 h-5" />
                                         Add First Item
                                     </Link>
                                 </div>
@@ -191,7 +192,7 @@ export default function DashboardPage() {
                     <div className="p-6">
                         <div className="flex flex-col gap-4 text-center py-8">
                             <div className="mx-auto bg-background-light dark:bg-background-dark h-12 w-12 rounded-full flex items-center justify-center text-text-secondary-light dark:text-text-secondary-dark mb-2">
-                                <span className="material-symbols-outlined">history</span>
+                                <History className="w-6 h-6" />
                             </div>
                             <p className="text-text-secondary-light dark:text-text-secondary-dark">No recent activity found on your account.</p>
                         </div>
