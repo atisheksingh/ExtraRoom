@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useCallback } from 'react';
 import { StorageItem, useStorage } from '@/context/StorageContext';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,16 +13,16 @@ interface ItemCardProps {
     item: StorageItem;
 }
 
-export function ItemCard({ item }: ItemCardProps) {
+export const ItemCard = React.memo(function ItemCard({ item }: ItemCardProps) {
     const { requestRetrieval, requestStorage } = useStorage();
 
-    const handleAction = () => {
+    const handleAction = useCallback(() => {
         if (item.status === 'in-vault') {
             requestRetrieval(item.id);
         } else {
             requestStorage(item.id);
         }
-    };
+    }, [item.id, item.status, requestRetrieval, requestStorage]);
 
     const statusColor = {
         'in-vault': 'default',
@@ -43,6 +44,7 @@ export function ItemCard({ item }: ItemCardProps) {
                         src={item.imageUrl}
                         alt={item.name}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"
                     />
                     <div className="absolute top-2 right-2">
@@ -77,4 +79,4 @@ export function ItemCard({ item }: ItemCardProps) {
             </CardFooter>
         </Card>
     );
-}
+});
