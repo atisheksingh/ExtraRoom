@@ -53,7 +53,7 @@ export default function PricingPage() {
                         </div>
                         <div className="flex items-baseline gap-1 mb-6">
                             <span className="text-text-main dark:text-white text-4xl font-black tracking-tight">
-                                {isYearly ? '₹1,699' : '₹1,999'}
+                                {isYearly ? '₹1999' : '₹199'}
                             </span>
                             <span className="text-text-muted dark:text-gray-400 font-medium">/mo</span>
                         </div>
@@ -90,7 +90,7 @@ export default function PricingPage() {
                         </div>
                         <div className="flex items-baseline gap-1 mb-6">
                             <span className="text-text-main dark:text-white text-5xl font-black tracking-tight">
-                                {isYearly ? '₹5,099' : '₹5,999'}
+                                {isYearly ? '₹2,999' : '₹499'}
                             </span>
                             <span className="text-text-muted dark:text-gray-400 font-medium">/mo</span>
                         </div>
@@ -128,7 +128,7 @@ export default function PricingPage() {
                         </div>
                         <div className="flex items-baseline gap-1 mb-6">
                             <span className="text-text-main dark:text-white text-4xl font-black tracking-tight">
-                                {isYearly ? '₹12,749' : '₹14,999'}
+                                {isYearly ? '₹3499' : '₹999'}
                             </span>
                             <span className="text-text-muted dark:text-gray-400 font-medium">/mo</span>
                         </div>
@@ -168,12 +168,12 @@ export default function PricingPage() {
                                 For enterprise solutions, commercial inventory, or custom XL storage needs, our team can build a custom quote just for you.
                             </p>
                             <div className="flex gap-4 justify-center md:justify-start pt-2">
-                                <button className="h-10 px-6 rounded-lg bg-text-main dark:bg-white text-white dark:text-background-dark font-bold text-sm hover:opacity-90 transition-opacity">
+                                <Link href="/contact" className="flex items-center justify-center h-10 px-6 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-colors shadow-sm">
                                     Contact Sales
-                                </button>
-                                <button className="h-10 px-6 rounded-lg bg-transparent border border-text-main dark:border-white text-text-main dark:text-white font-bold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                </Link>
+                                <Link href="#" className="flex items-center justify-center h-10 px-6 rounded-lg bg-transparent border border-text-main dark:border-white text-text-main dark:text-white font-bold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                                     View Enterprise
-                                </button>
+                                </Link>
                             </div>
                         </div>
                         <div className="w-full md:w-1/3 aspect-video md:aspect-square relative rounded-xl overflow-hidden bg-gradient-to-br from-primary-custom/20 to-primary-custom/5 flex items-center justify-center">
@@ -223,7 +223,7 @@ export default function PricingPage() {
             {/* Footer Simple */}
             <footer className="mt-12 py-8 border-t w-full border-border-light dark:border-border-dark bg-white dark:bg-surface-dark">
                 <div className="max-w-[1200px] mx-auto px-4 text-center">
-                    <p className="text-text-secondary-light dark:text-text-secondary-dark text-sm">© 2024 FlashStore Inc. All rights reserved.</p>
+                    <p className="text-text-secondary-light dark:text-text-secondary-dark text-sm">© 2026 FlashStore Inc. All rights reserved.</p>
                 </div>
             </footer>
         </div>
