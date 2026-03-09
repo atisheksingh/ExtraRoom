@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { db } from '@/lib/firebase';
 import type { Firestore } from 'firebase/firestore';
@@ -13,7 +13,13 @@ import {
     doc,
     updateDoc,
     serverTimestamp,
+    limit,
 } from 'firebase/firestore';
+
+function dbOrThrow(): Firestore {
+    if (!db) throw new Error('Firebase Firestore not initialized');
+    return db as Firestore;
+}
 
 export type StorageTier = 'small' | 'medium' | 'large' | 'xl';
 export type ItemStatus = 'in-vault' | 'out-for-delivery' | 'with-user';
@@ -48,11 +54,6 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
     const [currentTier, setTier] = useState<StorageTier>('small');
     const { user } = useAuth();
 
-    const dbOrThrow = (): Firestore => {
-        if (!db) throw new Error('Firebase Firestore not initialized');
-        return db as Firestore;
-    };
-
     // Load items for authenticated user from Firestore
     useEffect(() => {
         if (!user) {
@@ -74,7 +75,11 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
 
         const load = async () => {
             try {
-                const q = query(collection(dbOrThrow(), 'items'), where('ownerId', '==', user.uid));
+                const q = query(
+                    collection(dbOrThrow(), 'items'),
+                    where('ownerId', '==', user.uid),
+                    limit(50),
+                );
                 const snap = await getDocs(q);
                 const docs: StorageItem[] = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
                 setItems(docs);
@@ -87,7 +92,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
         load();
     }, [user]);
 
-    const addItem = async (newItem: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => {
+    const addItem = useCallback(async (newItem: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => {
         // Determine Hub Type based on Category (Simple logic for demo)
         const isBulky = ['Furniture', 'Sports', 'Appliances'].includes(newItem.category);
         const hubType: HubType = isBulky ? 'mega' : 'micro';
@@ -115,9 +120,9 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
             };
             setItems((prev) => [item, ...prev]);
         }
-    };
+    }, [user]);
 
-    const requestRetrieval = async (id: string) => {
+    const requestRetrieval = useCallback(async (id: string) => {
         setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'out-for-delivery' } : item)));
         try {
             const ref = doc(dbOrThrow(), 'items', id);
@@ -125,9 +130,9 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
             // ignore
         }
-    };
+    }, []);
 
-    const requestStorage = async (id: string) => {
+    const requestStorage = useCallback(async (id: string) => {
         setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'in-vault' } : item)));
         try {
             const ref = doc(dbOrThrow(), 'items', id);
@@ -135,10 +140,15 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
             // ignore
         }
-    };
+    }, []);
+
+    const contextValue = useMemo(
+        () => ({ items, addItem, requestRetrieval, requestStorage, currentTier, setTier }),
+        [items, addItem, requestRetrieval, requestStorage, currentTier],
+    );
 
     return (
-        <StorageContext.Provider value={{ items, addItem, requestRetrieval, requestStorage, currentTier, setTier }}>
+        <StorageContext.Provider value={contextValue}>
             {children}
         </StorageContext.Provider>
     );

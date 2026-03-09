@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStorage } from '@/context/StorageContext';
 import { useAuth } from '@/context/AuthContext';
@@ -46,13 +46,20 @@ export default function AddItemPage() {
   // Get current month & year for calendar
   const [calendarDate, setCalendarDate] = useState(new Date());
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
       setFile(f);
       setPreview(URL.createObjectURL(f));
     }
-  };
+  }, []);
+
+  // Revoke the object URL when preview changes or the component unmounts to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -62,12 +69,12 @@ export default function AddItemPage() {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
-  const handleDateSelect = (day: number) => {
+  const handleDateSelect = useCallback((day: number) => {
     const selected = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day);
     setScheduledPickupDate(selected.toISOString().split('T')[0]);
-  };
+  }, [calendarDate]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     setUploading(true);
     try {
       let imageUrl = '/images/cardboard-boxes.png';
@@ -95,14 +102,14 @@ export default function AddItemPage() {
     } finally {
       setUploading(false);
     }
-  };
+  }, [file, user, formData, scheduledPickupDate, scheduledPickupTime, addItem, router]);
 
-  const canProceed = {
+  const canProceed = useMemo(() => ({
     1: formData.name.trim() !== '' && formData.value > 0,
     2: preview !== null && formData.category !== '',
-    3: scheduledPickupDate && scheduledPickupTime,
+    3: scheduledPickupDate !== '' && scheduledPickupTime !== '',
     4: true,
-  };
+  }), [formData.name, formData.value, preview, formData.category, scheduledPickupDate, scheduledPickupTime]);
 
   const stepLabels = ['Details', 'Photo & Category', 'Pickup', 'Confirm'];
 

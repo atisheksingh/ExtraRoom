@@ -4,21 +4,22 @@ import { useStorage } from '@/context/StorageContext';
 import { useAuth } from '@/context/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 export default function DashboardPage() {
     const { items } = useStorage();
     const { user } = useAuth();
 
     // Calculate storage stats
-    const inVaultCount = items.filter(i => i.status === 'in-vault').length;
-    const outForDeliveryCount = items.filter(i => i.status === 'out-for-delivery' || i.status === 'with-user').length;
-    const totalItems = items.length;
-
-    // Simulation for capacity based on tier logic or straight number (Assuming up to 20 per tier for free)
-    const capacityLimit = 20;
-    const capacityPercent = totalItems > 0 ? Math.min(100, Math.round((totalItems / capacityLimit) * 100)) : 0;
-    const strokeDashoffset = 552 - (552 * capacityPercent) / 100;
+    const { inVaultCount, outForDeliveryCount, totalItems, capacityPercent, strokeDashoffset } = useMemo(() => {
+        const inVaultCount = items.filter(i => i.status === 'in-vault').length;
+        const outForDeliveryCount = items.filter(i => i.status === 'out-for-delivery' || i.status === 'with-user').length;
+        const totalItems = items.length;
+        const capacityLimit = 20;
+        const capacityPercent = totalItems > 0 ? Math.min(100, Math.round((totalItems / capacityLimit) * 100)) : 0;
+        const strokeDashoffset = 552 - (552 * capacityPercent) / 100;
+        return { inVaultCount, outForDeliveryCount, totalItems, capacityPercent, strokeDashoffset };
+    }, [items]);
 
     return (
         <ProtectedRoute>
@@ -120,7 +121,7 @@ export default function DashboardPage() {
                                     {items.slice(0, 6).map(item => (
                                         <Link href={`/items/${item.id}`} key={item.id} className="border border-border-light dark:border-border-dark rounded-xl overflow-hidden hover:shadow-md transition">
                                             <div className="h-32 w-full bg-slate-100 relative">
-                                                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                                <img src={item.imageUrl} alt={item.name} loading="lazy" className="w-full h-full object-cover" />
                                                 <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
                                                     {item.status.replace(/-/g, ' ')}
                                                 </div>

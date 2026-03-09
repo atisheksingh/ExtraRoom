@@ -17,7 +17,7 @@ function polarToXY(angle: number, radius: number) {
   };
 }
 
-export default function FlashStoreHubSection() {
+function FlashStoreHubSection() {
   const [activeHub, setActiveHub] = useState<number | null>(null);
   const [particles, setParticles] = useState<any[]>([]);
   const radius = 33;
@@ -28,10 +28,22 @@ export default function FlashStoreHubSection() {
       return { id: i, x: pos.x, y: pos.y, progress: (i * 16) % 100 };
     });
     setParticles(newParticles);
-    const interval = setInterval(() => {
-      setParticles((prev) => prev.map((p) => ({ ...p, progress: (p.progress + 0.8) % 100 })));
-    }, 30);
-    return () => clearInterval(interval);
+
+    let animationId: number;
+    let lastTime: number | null = null;
+
+    const animate = (timestamp: number) => {
+      if (lastTime === null) lastTime = timestamp;
+      const elapsed = timestamp - lastTime;
+      if (elapsed >= 30) {
+        setParticles((prev) => prev.map((p) => ({ ...p, progress: (p.progress + 0.8) % 100 })));
+        lastTime = timestamp;
+      }
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
   }, []);
 
   return (
@@ -198,3 +210,5 @@ export default function FlashStoreHubSection() {
     </div>
   );
 }
+
+export default React.memo(FlashStoreHubSection);

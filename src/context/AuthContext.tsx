@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { auth, db } from '@/lib/firebase';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
@@ -29,23 +29,23 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function authOrThrow(): Auth {
+    if (!auth) {
+        const error = 'Firebase auth not initialized. Check your .env file and browser console for details.';
+        // eslint-disable-next-line no-console
+        console.error(error);
+        throw new Error(error);
+    }
+    return auth as Auth;
+}
+
+function dbOrThrow(): Firestore {
+    if (!db) throw new Error('Firebase Firestore not initialized');
+    return db as Firestore;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-
-    const authOrThrow = (): Auth => {
-        if (!auth) {
-            const error = 'Firebase auth not initialized. Check your .env file and browser console for details.';
-            // eslint-disable-next-line no-console
-            console.error(error);
-            throw new Error(error);
-        }
-        return auth as Auth;
-    };
-
-    const dbOrThrow = (): Firestore => {
-        if (!db) throw new Error('Firebase Firestore not initialized');
-        return db as Firestore;
-    };
 
     useEffect(() => {
         // Retry logic: wait a bit and check if auth is available
@@ -103,18 +103,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return unsubscribe;
     }, []);
 
-    const signInWithGoogle = async () => {
+    const signInWithGoogle = useCallback(async () => {
         const provider = new GoogleAuthProvider();
         const a = authOrThrow();
         await firebaseSignInWithPopup(a, provider);
-    };
+    }, []);
 
-    const signOut = async () => {
+    const signOut = useCallback(async () => {
         const a = authOrThrow();
         await firebaseSignOut(a);
-    };
+    }, []);
 
-    const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+    const signUpWithEmail = useCallback(async (email: string, password: string, displayName?: string) => {
         const a = authOrThrow();
         const cred = await createUserWithEmailAndPassword(a, email, password);
         const u = cred.user;
@@ -130,14 +130,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             photoURL: u.photoURL ?? null,
             createdAt: serverTimestamp(),
         });
-    };
+    }, []);
 
-    const signInWithEmail = async (email: string, password: string) => {
+    const signInWithEmail = useCallback(async (email: string, password: string) => {
         const a = authOrThrow();
         await signInWithEmailAndPassword(a, email, password);
-    };
+    }, []);
 
-    const updateUserProfile = async (data: UpdateProfilePayload) => {
+    const updateUserProfile = useCallback(async (data: UpdateProfilePayload) => {
         const current = authOrThrow().currentUser;
         if (!current) throw new Error('Not authenticated');
         await firebaseUpdateProfile(current, data as any);
@@ -149,10 +149,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         // refresh local user
         setUser({ ...current } as User);
-    };
+    }, []);
+
+    const contextValue = useMemo(
+        () => ({ user, signInWithGoogle, signOut, signUpWithEmail, signInWithEmail, updateUserProfile }),
+        [user, signInWithGoogle, signOut, signUpWithEmail, signInWithEmail, updateUserProfile],
+    );
 
     return (
-        <AuthContext.Provider value={{ user, signInWithGoogle, signOut, signUpWithEmail, signInWithEmail, updateUserProfile }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
