@@ -16,21 +16,31 @@ interface ItemCardProps {
 export const ItemCard = React.memo(function ItemCard({ item }: ItemCardProps) {
     const { requestRetrieval, requestStorage } = useStorage();
 
+    const canRequestRetrieval = item.status === 'in-vault';
+    const canRequestStorage = item.status === 'with-user';
+    const actionEnabled = canRequestRetrieval || canRequestStorage;
+
     const handleAction = useCallback(() => {
-        if (item.status === 'in-vault') {
+        if (canRequestRetrieval) {
             requestRetrieval(item.id);
-        } else {
+        } else if (canRequestStorage) {
             requestStorage(item.id);
         }
-    }, [item.id, item.status, requestRetrieval, requestStorage]);
+    }, [canRequestRetrieval, canRequestStorage, item.id, requestRetrieval, requestStorage]);
 
-    const statusColor = {
+    const statusColor: Record<StorageItem['status'], React.ComponentProps<typeof Badge>['variant']> = {
+        placed: 'outline',
+        'pickup-scheduled': 'secondary',
+        'out-for-pickup': 'secondary',
         'in-vault': 'default',
         'out-for-delivery': 'secondary',
         'with-user': 'outline',
-    } as const;
+    };
 
-    const statusIcon = {
+    const statusIcon: Record<StorageItem['status'], React.ReactNode> = {
+        placed: <Package className="w-4 h-4 mr-1" />,
+        'pickup-scheduled': <Clock className="w-4 h-4 mr-1" />,
+        'out-for-pickup': <Truck className="w-4 h-4 mr-1" />,
         'in-vault': <Package className="w-4 h-4 mr-1" />,
         'out-for-delivery': <Truck className="w-4 h-4 mr-1" />,
         'with-user': <Clock className="w-4 h-4 mr-1" />,
@@ -71,10 +81,10 @@ export const ItemCard = React.memo(function ItemCard({ item }: ItemCardProps) {
                 <Button
                     onClick={handleAction}
                     className="w-full"
-                    variant={item.status === 'in-vault' ? 'default' : 'secondary'}
-                    disabled={item.status === 'out-for-delivery'}
+                    variant={canRequestRetrieval ? 'default' : 'secondary'}
+                    disabled={!actionEnabled}
                 >
-                    {item.status === 'in-vault' ? 'Retrieval (10m)' : 'Store Item'}
+                    {canRequestRetrieval ? 'Retrieval (10m)' : canRequestStorage ? 'Store Item' : 'No Action Available'}
                 </Button>
             </CardFooter>
         </Card>
