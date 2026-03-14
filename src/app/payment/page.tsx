@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useStorage } from '@/context/StorageContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CreditCard, IndianRupee, ShieldCheck } from 'lucide-react';
 
-export default function PaymentPage() {
+function PaymentContent() {
     const router = useRouter();
     const params = useSearchParams();
     const { items, schedulePickup } = useStorage();
@@ -133,5 +133,13 @@ export default function PaymentPage() {
                 )}
             </div>
         </ProtectedRoute>
+    );
+}
+
+export default function PaymentPage() {
+    return (
+        <Suspense fallback={<div className="mx-auto w-full max-w-4xl py-8 text-sm text-slate-600">Loading payment details...</div>}>
+            <PaymentContent />
+        </Suspense>
     );
 }

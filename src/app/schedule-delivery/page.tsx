@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CalendarClock, CheckCircle2 } from 'lucide-react';
@@ -13,7 +13,7 @@ function todayISO() {
     return new Date().toISOString().split('T')[0];
 }
 
-export default function ScheduleDeliveryPage() {
+function ScheduleDeliveryContent() {
     const router = useRouter();
     const params = useSearchParams();
     const { items } = useStorage();
@@ -139,5 +139,13 @@ export default function ScheduleDeliveryPage() {
                 )}
             </div>
         </ProtectedRoute>
+    );
+}
+
+export default function ScheduleDeliveryPage() {
+    return (
+        <Suspense fallback={<div className="mx-auto w-full max-w-4xl py-8 text-sm text-slate-600">Loading schedule details...</div>}>
+            <ScheduleDeliveryContent />
+        </Suspense>
     );
 }
