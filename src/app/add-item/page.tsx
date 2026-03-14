@@ -71,7 +71,11 @@ export default function AddItemPage() {
 
   const handleDateSelect = useCallback((day: number) => {
     const selected = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selected < today) return;
     setScheduledPickupDate(selected.toISOString().split('T')[0]);
+    setScheduledPickupTime('');
   }, [calendarDate]);
 
   const handleSubmit = useCallback(async () => {
@@ -247,7 +251,13 @@ export default function AddItemPage() {
                             {calendarDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
                           </span>
                           <div className="flex gap-2">
-                            <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1))} className="px-2 py-1 hover:bg-gray-200 rounded">←</button>
+                            <button onClick={() => {
+                              const now = new Date();
+                              const prev = new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1);
+                              if (prev.getFullYear() > now.getFullYear() || (prev.getFullYear() === now.getFullYear() && prev.getMonth() >= now.getMonth())) {
+                                setCalendarDate(prev);
+                              }
+                            }} className="px-2 py-1 hover:bg-gray-200 rounded">←</button>
                             <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1))} className="px-2 py-1 hover:bg-gray-200 rounded">→</button>
                           </div>
                         </div>
@@ -264,13 +274,20 @@ export default function AddItemPage() {
                             const day = i + 1;
                             const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                             const isSelected = scheduledPickupDate === dateStr;
+                            const cellDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day);
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const isPast = cellDate < today;
                             return (
                               <button
                                 key={day}
                                 onClick={() => handleDateSelect(day)}
+                                disabled={isPast}
                                 className={`p-2 rounded text-sm font-medium ${isSelected
                                   ? 'bg-orange-500 text-white'
-                                  : 'bg-white border border-gray-200 hover:border-orange-300'
+                                  : isPast
+                                    ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                                    : 'bg-white border border-gray-200 hover:border-orange-300'
                                   }`}
                               >
                                 {day}
@@ -285,18 +302,36 @@ export default function AddItemPage() {
                       <div>
                         <Label className="text-sm font-semibold">Available Slots</Label>
                         <div className="grid grid-cols-2 gap-3 mt-3">
-                          {TIME_SLOTS.map((slot) => (
-                            <button
-                              key={slot}
-                              onClick={() => setScheduledPickupTime(slot)}
-                              className={`p-3 rounded-lg border-2 text-center font-semibold transition ${scheduledPickupTime === slot
-                                ? 'border-orange-500 bg-orange-50 text-orange-600'
-                                : 'border-gray-200 bg-white text-slate-600 hover:border-orange-300'
-                                }`}
-                            >
-                              {slot}
-                            </button>
-                          ))}
+                          {TIME_SLOTS.map((slot) => {
+                            const isToday = scheduledPickupDate === new Date().toISOString().split('T')[0];
+                            let slotPassed = false;
+                            if (isToday) {
+                              const now = new Date();
+                              const [time, period] = slot.split(' ');
+                              const [hStr, mStr] = time.split(':');
+                              let hours = parseInt(hStr);
+                              if (period === 'PM' && hours !== 12) hours += 12;
+                              if (period === 'AM' && hours === 12) hours = 0;
+                              const slotDate = new Date();
+                              slotDate.setHours(hours, parseInt(mStr), 0, 0);
+                              slotPassed = slotDate <= now;
+                            }
+                            return (
+                              <button
+                                key={slot}
+                                onClick={() => setScheduledPickupTime(slot)}
+                                disabled={slotPassed}
+                                className={`p-3 rounded-lg border-2 text-center font-semibold transition ${scheduledPickupTime === slot
+                                  ? 'border-orange-500 bg-orange-50 text-orange-600'
+                                  : slotPassed
+                                    ? 'border-gray-200 bg-gray-100 text-gray-300 cursor-not-allowed'
+                                    : 'border-gray-200 bg-white text-slate-600 hover:border-orange-300'
+                                  }`}
+                              >
+                                {slot}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

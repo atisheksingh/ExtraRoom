@@ -22,7 +22,7 @@ function dbOrThrow(): Firestore {
 }
 
 export type StorageTier = 'small' | 'medium' | 'large' | 'xl';
-export type ItemStatus = 'in-vault' | 'out-for-delivery' | 'with-user';
+export type ItemStatus = 'placed' | 'pickup-scheduled' | 'out-for-pickup' | 'in-vault' | 'out-for-delivery' | 'with-user';
 export type HubType = 'micro' | 'mega';
 
 export interface StorageItem {
@@ -43,6 +43,7 @@ interface StorageContextType {
     addItem: (item: Omit<StorageItem, 'id' | 'dateAdded' | 'status' | 'hubType'>) => Promise<void>;
     requestRetrieval: (id: string) => Promise<void>;
     requestStorage: (id: string) => Promise<void>;
+    schedulePickup: (id: string, date?: string, time?: string) => Promise<void>;
     currentTier: StorageTier;
     setTier: (tier: StorageTier) => void;
 }
@@ -99,7 +100,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
 
         const payload = {
             ...newItem,
-            status: 'in-vault' as ItemStatus,
+            status: 'placed' as ItemStatus,
             hubType,
             ownerId: user?.uid ?? null,
             dateAdded: new Date().toISOString(),
@@ -115,7 +116,7 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
                 ...newItem,
                 id: Math.random().toString(36).substr(2, 9),
                 dateAdded: new Date().toISOString(),
-                status: 'in-vault',
+                status: 'placed',
                 hubType,
             };
             setItems((prev) => [item, ...prev]);
@@ -142,9 +143,34 @@ export function StorageProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
+    const schedulePickup = useCallback(async (id: string, date?: string, time?: string) => {
+        setItems((prev) => prev.map((item) => (
+            item.id === id
+                ? {
+                    ...item,
+                    status: 'pickup-scheduled' as ItemStatus,
+                    scheduledPickupDate: date ?? item.scheduledPickupDate,
+                    scheduledPickupTime: time ?? item.scheduledPickupTime,
+                }
+                : item
+        )));
+        try {
+            const ref = doc(dbOrThrow(), 'items', id);
+            const updates: Record<string, unknown> = {
+                status: 'pickup-scheduled',
+                updatedAt: serverTimestamp(),
+            };
+            if (date) updates.scheduledPickupDate = date;
+            if (time) updates.scheduledPickupTime = time;
+            await updateDoc(ref, updates);
+        } catch (e) {
+            // ignore
+        }
+    }, []);
+
     const contextValue = useMemo(
-        () => ({ items, addItem, requestRetrieval, requestStorage, currentTier, setTier }),
-        [items, addItem, requestRetrieval, requestStorage, currentTier],
+        () => ({ items, addItem, requestRetrieval, requestStorage, schedulePickup, currentTier, setTier }),
+        [items, addItem, requestRetrieval, requestStorage, schedulePickup, currentTier],
     );
 
     return (

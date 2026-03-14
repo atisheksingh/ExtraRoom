@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import LoginDialog from '@/components/auth/LoginDialog';
 
 export function Navbar() {
-    const { user, signInWithGoogle, signOut } = useAuth();
+    const { user, signOut } = useAuth();
 
     return (
         <nav className="border-b bg-white">
@@ -30,22 +30,18 @@ export function Navbar() {
                             <Link href="/dashboard" className="text-sm font-medium transition-colors hover:text-primary">
                                 Dashboard
                             </Link>
-                            <Link href="/items" className="text-sm font-medium transition-colors hover:text-primary">
-                                Items
-                            </Link>
-                            <Link href="/add-item" className="text-sm font-medium transition-colors hover:text-primary">
-                                Add Item
-                            </Link>
                         </>
                     )}
                     {user ? (
                         <div className="flex items-center space-x-3">
-                            <img
-                                src={user.photoURL ?? 'https://www.gravatar.com/avatar/?d=mp&s=80'}
-                                alt={user.displayName ?? user.email ?? 'User avatar'}
-                                className="h-8 w-8 rounded-full object-cover"
-                            />
-                            <span className="text-sm">{user.displayName ?? user.email}</span>
+                            <Link href="/profile" className="flex items-center space-x-3 rounded-md px-1 py-1 hover:bg-slate-100 transition-colors">
+                                <img
+                                    src={user.photoURL ?? 'https://www.gravatar.com/avatar/?d=mp&s=80'}
+                                    alt={user.displayName ?? user.email ?? 'User avatar'}
+                                    className="h-8 w-8 rounded-full object-cover"
+                                />
+                                <span className="text-sm">{user.displayName ?? user.email}</span>
+                            </Link>
                             <Button size="sm" onClick={() => signOut()}>
                                 Sign out
                             </Button>

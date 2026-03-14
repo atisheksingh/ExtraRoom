@@ -4,33 +4,58 @@ import { useStorage } from '@/context/StorageContext';
 import { useAuth } from '@/context/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
-import { useMemo } from 'react';
-import { Archive, Calendar, Clock, Database, History, Inbox, Package, Plus, Truck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { Archive, Calendar, CalendarCheck, Check, Clock, Database, History, Inbox, Package, Plus, Truck } from 'lucide-react';
 
 export default function DashboardPage() {
     const { items } = useStorage();
     const { user } = useAuth();
+    const router = useRouter();
+    const [selectedPlacedIds, setSelectedPlacedIds] = useState<string[]>([]);
 
     // Calculate storage stats
-    const { inVaultCount, outForDeliveryCount, totalItems, capacityPercent, strokeDashoffset } = useMemo(() => {
+    const { inVaultCount, outForDeliveryCount, placedCount, pickupScheduledCount, totalItems, capacityPercent, strokeDashoffset } = useMemo(() => {
         const inVaultCount = items.filter(i => i.status === 'in-vault').length;
         const outForDeliveryCount = items.filter(i => i.status === 'out-for-delivery' || i.status === 'with-user').length;
+        const placedCount = items.filter(i => i.status === 'placed').length;
+        const pickupScheduledCount = items.filter(i => i.status === 'pickup-scheduled' || i.status === 'out-for-pickup').length;
         const totalItems = items.length;
         const capacityLimit = 20;
         const capacityPercent = totalItems > 0 ? Math.min(100, Math.round((totalItems / capacityLimit) * 100)) : 0;
         const strokeDashoffset = 552 - (552 * capacityPercent) / 100;
-        return { inVaultCount, outForDeliveryCount, totalItems, capacityPercent, strokeDashoffset };
+        return { inVaultCount, outForDeliveryCount, placedCount, pickupScheduledCount, totalItems, capacityPercent, strokeDashoffset };
     }, [items]);
+
+    const placedItems = useMemo(() => items.filter(i => i.status === 'placed'), [items]);
+
+    const togglePlacedSelection = (id: string) => {
+        setSelectedPlacedIds((prev) => (
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        ));
+    };
+
+    const proceedToPayment = () => {
+        if (!selectedPlacedIds.length) return;
+        const itemIds = encodeURIComponent(selectedPlacedIds.join(','));
+        router.push(`/schedule-delivery?itemIds=${itemIds}`);
+    };
 
     return (
         <ProtectedRoute>
             <div className="flex flex-col gap-8 w-full pb-12 transition-colors duration-200" style={{ fontFamily: 'Manrope, sans-serif' }}>
                 {/* Welcome Section */}
-                <div>
-                    <h2 className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark tracking-tight">Dashboard</h2>
-                    <p className="text-text-secondary-light dark:text-text-secondary-dark mt-1">Welcome back! Here's what's happening with your storage.</p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark tracking-tight">Dashboard</h2>
+                        <p className="text-text-secondary-light dark:text-text-secondary-dark mt-1">Welcome back! Here&apos;s what&apos;s happening with your storage.</p>
+                    </div>
+                    <Link href="/add-item" className="bg-primary-custom hover:bg-primary-dark text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary-custom/20 hover:shadow-primary-custom/40 flex items-center gap-2">
+                        <Plus className="w-5 h-5" />
+                        Add Item
+                    </Link>
                 </div>
-
+                
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Total Items Card */}
@@ -59,11 +84,11 @@ export default function DashboardPage() {
                             <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
                                 <Inbox className="w-5 h-5" />
                             </div>
-                            <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">Active Retrievals</h3>
+                            <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">Pending Pickup</h3>
                         </div>
                         <div>
-                            <p className="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark">{outForDeliveryCount}</p>
-                            <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">In transit to you</p>
+                            <p className="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark">{pickupScheduledCount}</p>
+                            <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Scheduled or being picked up</p>
                         </div>
                     </div>
 
@@ -76,11 +101,11 @@ export default function DashboardPage() {
                             <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg text-green-600 dark:text-green-400">
                                 <Clock className="w-5 h-5" />
                             </div>
-                            <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">Next Delivery</h3>
+                            <h3 className="font-medium text-text-secondary-light dark:text-text-secondary-dark">In Vault</h3>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">None</p>
-                            <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Scheduled pickup</p>
+                            <p className="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark">{inVaultCount}</p>
+                            <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-1">Safely stored</p>
                         </div>
                     </div>
                 </div>
@@ -121,8 +146,8 @@ export default function DashboardPage() {
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                     {items.slice(0, 6).map(item => (
                                         <Link href={`/items/${item.id}`} key={item.id} className="border border-border-light dark:border-border-dark rounded-xl overflow-hidden hover:shadow-md transition">
-                                            <div className="h-32 w-full bg-slate-100 relative">
-                                                <img src={item.imageUrl} alt={item.name} loading="lazy" className="w-full h-full object-cover" />
+                                            <div className="h-40 w-full bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center">
+                                                <img src={item.imageUrl} alt={item.name} loading="lazy" className="max-w-full max-h-full object-contain p-2" />
                                                 <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
                                                     {item.status.replace(/-/g, ' ')}
                                                 </div>
@@ -182,6 +207,83 @@ export default function DashboardPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Schedule Pickup Section */}
+                {placedItems.length > 0 && (
+                    <div className="bg-surface-light dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark overflow-hidden">
+                        <div className="p-6 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
+                                    <CalendarCheck className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-lg text-text-primary-light dark:text-text-primary-dark">Schedule Pickup</h3>
+                                    <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
+                                        {placedItems.length} item{placedItems.length !== 1 ? 's' : ''} waiting for pickup scheduling
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={proceedToPayment}
+                                disabled={selectedPlacedIds.length === 0}
+                                className="bg-primary-custom hover:bg-primary-dark disabled:opacity-50 text-white text-sm font-bold py-2 px-4 rounded-lg transition-all"
+                            >
+                                Continue to Schedule ({selectedPlacedIds.length})
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {placedItems.map(item => (
+                                    <div
+                                        key={item.id}
+                                        className={`border rounded-xl overflow-hidden transition ${selectedPlacedIds.includes(item.id)
+                                            ? 'border-primary-custom ring-2 ring-primary-custom/30'
+                                            : 'border-border-light dark:border-border-dark'
+                                            }`}
+                                    >
+                                        <div className="h-32 w-full bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center">
+                                            <img src={item.imageUrl} alt={item.name} loading="lazy" className="max-w-full max-h-full object-contain p-2" />
+                                            <button
+                                                type="button"
+                                                onClick={() => togglePlacedSelection(item.id)}
+                                                className={`absolute top-2 left-2 w-7 h-7 rounded-full border-2 flex items-center justify-center ${selectedPlacedIds.includes(item.id)
+                                                    ? 'bg-primary-custom border-primary-custom text-white'
+                                                    : 'bg-white/90 border-white text-slate-500'
+                                                    }`}
+                                                aria-label={`Select ${item.name}`}
+                                            >
+                                                <Check className="w-4 h-4" />
+                                            </button>
+                                            <div className="absolute top-2 right-2 bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">
+                                                Added
+                                            </div>
+                                        </div>
+                                        <div className="p-4">
+                                            <h4 className="font-bold text-sm truncate text-text-primary-light dark:text-text-primary-dark">{item.name}</h4>
+                                            <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark mb-1">{item.category}</p>
+                                            {item.scheduledPickupDate && (
+                                                <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark mb-3">
+                                                    Preferred: {item.scheduledPickupDate} {item.scheduledPickupTime && `at ${item.scheduledPickupTime}`}
+                                                </p>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => togglePlacedSelection(item.id)}
+                                                className={`w-full text-sm font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2 ${selectedPlacedIds.includes(item.id)
+                                                    ? 'bg-primary-custom text-white hover:bg-primary-dark'
+                                                    : 'bg-white border border-border-light dark:border-border-dark text-slate-700 dark:text-slate-200'
+                                                    }`}
+                                            >
+                                                <CalendarCheck className="w-4 h-4" />
+                                                {selectedPlacedIds.includes(item.id) ? 'Selected' : 'Select for Delivery'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Recent Activity */}
                 <div className="bg-surface-light dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark overflow-hidden">

@@ -39,13 +39,13 @@ export const ItemCard = React.memo(function ItemCard({ item }: ItemCardProps) {
     return (
         <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <Link href={`/items/${item.id}`} className="block">
-                <div className="relative h-48 w-full bg-gray-100">
+                <div className="relative h-48 w-full bg-gray-100 flex items-center justify-center">
                     <Image
                         src={item.imageUrl}
                         alt={item.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover"
+                        className="object-contain p-2"
                     />
                     <div className="absolute top-2 right-2">
                         <Badge variant={statusColor[item.status]}>

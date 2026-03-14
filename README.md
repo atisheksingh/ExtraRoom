@@ -34,3 +34,38 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Admin Dashboard Setup
+
+This project now includes:
+
+- Admin login page: `/admin/login`
+- Admin dashboard: `/admin`
+- Admin scan API: `/api/admin/overview`
+
+The admin API verifies Firebase ID tokens and allows access when either:
+
+- the user has custom claim `admin: true`, or
+- the user email is included in `ADMIN_EMAILS`
+
+Add these environment variables to `.env.local`:
+
+```bash
+# Existing client Firebase keys
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+
+# Server-side Firebase Admin credentials (service account)
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# Comma-separated list of admin emails
+ADMIN_EMAILS=admin@example.com,owner@example.com
+```
+
+If you use `GOOGLE_APPLICATION_CREDENTIALS`, the app can also initialize Firebase Admin from that credential file.

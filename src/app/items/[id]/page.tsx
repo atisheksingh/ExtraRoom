@@ -5,7 +5,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
-import { ChevronRight, Package, Palette, BadgeCheck, Truck, ArrowRight, Rocket, Radar, Headset } from 'lucide-react';
+import { ChevronRight, Package, Palette, BadgeCheck, Truck, ArrowRight, Rocket, Radar, Headset, Navigation, LocateFixed } from 'lucide-react';
 
 export default function ItemDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { items, requestRetrieval, requestStorage } = useStorage();
@@ -22,6 +22,10 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
     }
 
     const isOut = item.status === 'out-for-delivery' || item.status === 'with-user';
+    const showTrackingMap = item.status !== 'placed' && item.status !== 'in-vault';
+    const isPickupScheduled = item.status === 'pickup-scheduled';
+    const isRouteLive = item.status === 'out-for-pickup' || item.status === 'out-for-delivery';
+    const isDelivered = item.status === 'with-user';
 
     return (
         <ProtectedRoute>
@@ -123,41 +127,69 @@ export default function ItemDetailsPage({ params }: { params: Promise<{ id: stri
                             </h3>
 
                             {/* Network Diagram */}
-                            <div className="relative bg-background-light dark:bg-background-dark rounded-lg p-6 mb-8 border border-border-light dark:border-border-dark h-64 flex items-center justify-center overflow-hidden">
-                                {/* Abstract Map Grid */}
-                                <div className="absolute inset-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'radial-gradient(#8d6a5e 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                            {showTrackingMap && (
+                                <div className="relative mb-8 h-72 overflow-hidden rounded-2xl border border-border-light dark:border-border-dark bg-[#d4dbe4] dark:bg-[#2a3442]">
+                                    {/* Road map backdrop */}
+                                    <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
+                                        <g stroke="rgba(255,255,255,0.75)" strokeWidth="1.2" fill="none" strokeLinecap="round">
+                                            <path d="M8 8 L20 92" />
+                                            <path d="M26 0 L26 100" />
+                                            <path d="M48 4 L66 92" />
+                                            <path d="M74 12 L74 100" />
+                                            <path d="M4 26 L96 26" />
+                                            <path d="M0 58 L100 58" />
+                                            <path d="M14 84 L92 84" />
+                                            <path d="M10 10 L24 40 L14 66 L36 70 L58 26" />
+                                            <path d="M60 44 L96 16" />
+                                            <path d="M64 52 L92 70" />
+                                        </g>
+                                    </svg>
 
-                                {/* Connecting Lines */}
-                                <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-                                    <path className={`opacity-40 transition-all duration-1000 ${item.status === 'out-for-delivery' ? 'stroke-primary-custom animate-pulse' : 'stroke-[#8d6a5e]'}`} d="M 80 160 L 160 80 L 240 140" fill="none" strokeDasharray="4 4" strokeWidth="2"></path>
-                                </svg>
+                                    {/* Route line */}
+                                    <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
+                                        <path
+                                            d="M24 67 L42 72 L58 44 L74 60"
+                                            fill="none"
+                                            stroke={isRouteLive || isDelivered ? '#14b8c4' : '#6b7280'}
+                                            strokeWidth="1.6"
+                                            strokeLinecap="round"
+                                            strokeDasharray={isPickupScheduled ? '3 3' : '0'}
+                                            className={isRouteLive ? 'animate-pulse' : ''}
+                                        />
+                                    </svg>
 
-                                {/* Vault Node */}
-                                <div className="absolute left-[20%] top-[60%] flex flex-col items-center gap-2">
-                                    <div className={`size-3 rounded-full ${item.status === 'in-vault' ? 'bg-primary-custom ring-4 ring-primary-custom/20' : 'bg-neutral-300 dark:bg-neutral-600'}`}></div>
-                                    <span className="text-[10px] font-bold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">South Hub</span>
-                                </div>
+                                    <button className="absolute right-4 top-4 rounded-full bg-white/85 px-4 py-1.5 text-sm font-medium text-slate-700 shadow-sm">
+                                        Help
+                                    </button>
 
-                                {/* Transit Node (Active) */}
-                                <div className="absolute left-[50%] top-[30%] -translate-x-1/2 flex flex-col items-center gap-2 z-10">
-                                    <div className="relative size-6">
-                                        {item.status === 'out-for-delivery' && <div className="absolute inset-0 bg-primary-custom rounded-full animate-pulse opacity-50 relative animate-ping"></div>}
-                                        <div className={`absolute inset-1.5 rounded-full ${item.status === 'out-for-delivery' ? 'bg-primary-custom shadow-[0_0_10px_#ff6933]' : 'bg-neutral-300 dark:bg-neutral-600'}`}></div>
+                                    {/* Source hub */}
+                                    <div className="absolute left-[21%] top-[66%] -translate-x-1/2 -translate-y-1/2">
+                                        <div className="h-4 w-4 rounded-full border-2 border-white bg-cyan-500 shadow" />
+                                        <span className="mt-2 block text-[11px] font-bold uppercase tracking-wide text-slate-700 dark:text-slate-100">South Hub</span>
                                     </div>
-                                    {item.status === 'out-for-delivery' && (
-                                        <div className="bg-white dark:bg-surface-dark px-3 py-1 rounded shadow-lg border border-primary-custom/20 flex flex-col items-center min-w-[140px] mt-2">
-                                            <span className="text-xs font-bold text-text-primary-light dark:text-text-primary-dark">North East Mega-Hub</span>
-                                            <span className="text-[10px] text-primary-custom font-medium">Processing...</span>
-                                        </div>
-                                    )}
-                                </div>
 
-                                {/* User Node */}
-                                <div className="absolute right-[20%] top-[55%] flex flex-col items-center gap-2">
-                                    <div className={`size-3 rounded-full border-2 ${item.status === 'with-user' ? 'border-primary-custom bg-white ring-4 ring-primary-custom/20' : 'border-neutral-300 dark:border-neutral-600'}`}></div>
-                                    <span className="text-[10px] font-bold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">Local Hub</span>
+                                    {/* Courier position */}
+                                    <div className={`absolute top-[48%] z-10 -translate-x-1/2 -translate-y-1/2 ${isDelivered ? 'left-[74%]' : isRouteLive ? 'left-[58%]' : 'left-[43%]'}`}>
+                                        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg">
+                                            {isRouteLive && <div className="absolute inset-0 rounded-full bg-cyan-400 opacity-50 animate-ping" />}
+                                            <Navigation className="relative z-10 h-4 w-4" />
+                                        </div>
+                                    </div>
+
+                                    {/* Destination marker */}
+                                    <div className="absolute left-[75%] top-[60%] -translate-x-1/2 -translate-y-1/2">
+                                        <div className="h-5 w-5 rounded-full border-2 border-cyan-500 bg-white shadow" />
+                                        <span className="mt-2 block text-[11px] font-bold uppercase tracking-wide text-slate-700 dark:text-slate-100">Local Hub</span>
+                                    </div>
+
+                                    <div className="absolute bottom-4 left-4 rounded-xl bg-black/85 px-3 py-2 text-xs font-semibold text-white shadow">
+                                        You are here
+                                    </div>
+                                    <button className="absolute bottom-4 right-4 rounded-full bg-white/85 p-2 text-slate-700 shadow-sm">
+                                        <LocateFixed className="h-4 w-4" />
+                                    </button>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Step Tracker */}
                             <div className="relative pl-4 space-y-8 before:absolute before:left-[21px] before:top-2 before:bottom-2 before:w-0.5 before:bg-border-light dark:before:bg-border-dark">
